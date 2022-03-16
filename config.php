@@ -6,6 +6,7 @@ return [
         'name' => "{plugin_name}",
         'version' => "{plugin_version}",
         'prefix' => "{prefix}_",
+        'textdomain' => "{plugin_slug}",
     ],
 
     'require' => [
@@ -14,11 +15,10 @@ return [
         'plugins' => [
             [
                 'name' => "WooCommerce",
-                'version' => ">=6.0",
+                'version' => ">=3.0",
                 'url' => "https://woocommerce.com",
                 'path' => "woocommerce/woocommerce.php",
             ],
         ],
     ],
-
 ];

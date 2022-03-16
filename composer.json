@@ -17,5 +17,8 @@
       "PREFIX\\": "",
       "PREFIX\\App\\": "app/"
     }
+  },
+  "require-dev": {
+    "ananthatstar/wp-plugin-helpers": "^1.0@beta"
   }
 }

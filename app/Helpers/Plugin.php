@@ -30,14 +30,14 @@ class Plugin
         $php_version = Config::get('require.php', '*');
         if (!Functions::checkVersion(PHP_VERSION, $php_version)) {
             $message = sprintf(__('{plugin_name} requires PHP version %s', '{plugin_slug}'), $php_version);
-            $die ? die($message) : Functions::adminNotice($message, 'error');
+            $die ? die($message) : WP::adminNotice($message, 'error');
             return false;
         }
 
         $wordpress_version = Config::get('require.wordpress', '*');
         if (!Functions::checkVersion($wp_version, $wordpress_version)) {
             $message = sprintf(__('{plugin_name} requires WordPress version %s', '{plugin_slug}'), $wordpress_version);
-            $die ? die($message) : Functions::adminNotice($message, 'error');
+            $die ? die($message) : WP::adminNotice($message, 'error');
             return false;
         }
 
@@ -53,7 +53,7 @@ class Plugin
             $plugin_name = isset($plugin['url']) ? '<a href="' . $plugin['url'] . '" target="_blank">' . $plugin['name'] . '</a>' : $plugin['name'];
             if (!in_array($plugin['path'], $active_plugins, false) && !array_key_exists($plugin['path'], $active_plugins)) {
                 $message = sprintf(__('{plugin_name} requires %s plugin to be installed and active', '{plugin_slug}'), $plugin_name);
-                $die ? die($message) : Functions::adminNotice($message, 'error');
+                $die ? die($message) : WP::adminNotice($message, 'error');
                 return false;
             }
 
@@ -65,7 +65,7 @@ class Plugin
             $plugin_version = isset($plugin_data['Version']) ? $plugin_data['Version'] : '*';
             if (isset($plugin['version']) && !Functions::checkVersion($plugin_version, $plugin['version'])) {
                 $message = sprintf(__('{plugin_name} requires %s version %s', '{plugin_slug}'), $plugin_name, $plugin['version']);
-                $die ? die($message) : Functions::adminNotice($message, 'error');
+                $die ? die($message) : WP::adminNotice($message, 'error');
                 return false;
             }
         }
