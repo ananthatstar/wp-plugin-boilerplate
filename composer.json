@@ -1,0 +1,21 @@
+{
+  "name": "ananthatstar/wp-plugin-boilerplate",
+  "description": "WordPress Plugin Boilerplate Generator",
+  "version": "1.0.0",
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "type": "wordpress-plugin",
+  "authors": [
+    {
+      "name": "Anantharaj B",
+      "email": "ananthatstar@gmail.com"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
+  "autoload": {
+    "psr-4": {
+      "PREFIX\\": "",
+      "PREFIX\\App\\": "app/"
+    }
+  }
+}
