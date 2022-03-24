@@ -20,7 +20,7 @@ class Assets
     /**
      * Get asset url
      *
-     * @param $path
+     * @param string $path
      * @return string
      */
     public static function getUrl($path)
@@ -31,7 +31,7 @@ class Assets
     /**
      * Check if the file is exists or not
      *
-     * @param $path
+     * @param string $path
      * @return bool
      */
     public static function fileExists($path)
@@ -91,6 +91,16 @@ class Assets
     }
 
     /**
+     * Dequeue style
+     *
+     * @param string $name
+     */
+    public static function dequeueStyle($name)
+    {
+        wp_dequeue_style($name);
+    }
+
+    /**
      * Enqueue script
      *
      * @param string $name
@@ -134,5 +144,15 @@ class Assets
     public static function enqueueAdminScript($name, $file, array $deps = [], array $data = [])
     {
         self::enqueueScript($name, $file, $deps, $data, true);
+    }
+
+    /**
+     * Dequeue script
+     *
+     * @param string $name
+     */
+    public static function dequeueScript($name)
+    {
+        wp_dequeue_script($name);
     }
 }

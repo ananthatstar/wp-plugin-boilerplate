@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "build": "npm run scss_build",
+    "watch": "npm run scss_watch",
+    "scss_build": "node-sass -q assets/scss/ -o assets/css/",
+    "scss_watch": "node-sass -w assets/scss/ -o assets/css/"
+  },
+  "dependencies": {
+    "node-sass": "^7.0.1"
+  }
+}

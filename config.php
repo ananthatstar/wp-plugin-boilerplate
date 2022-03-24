@@ -16,8 +16,8 @@ return [
             [
                 'name' => "WooCommerce",
                 'version' => ">=3.0",
+                'file' => "woocommerce/woocommerce.php",
                 'url' => "https://woocommerce.com",
-                'path' => "woocommerce/woocommerce.php",
             ],
         ],
     ],
