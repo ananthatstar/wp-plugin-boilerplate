@@ -287,9 +287,6 @@ build() {
             rm -rf .git
         fi
 
-        run_npm_install
-        run_composer_install
-
         rename_files 'plugin-slug' $PLUGIN_SLUG
         replace_text_in_files '{plugin_name}' "$PLUGIN_NAME"
         replace_text_in_files '{plugin_description}' "$PLUGIN_DESC"
@@ -308,6 +305,9 @@ build() {
         replace_text_in_files '{author_copyright}' "$AUTHOR_COPYRIGHT"
         replace_text_in_files '{author_license}' $AUTHOR_LICENSE
         replace_text_in_files '{author_url}' $AUTHOR_URL
+
+        run_npm_install
+        run_composer_install
 
         generate_config_file
     elif [ -f ".config" ]; then
@@ -345,7 +345,7 @@ set_defaults
 echo '|============ WP Plugin (MVC pattern) Boilerplate Generator v1.0.0 ============|'
 if [ -z "$1" ]; then
     echo ''
-    echo '\033[0;31mArugument required. \033[39m'
+    echo '\033[0;31mArgument required. \033[39m'
     exit 1
 elif [ "$1" = "new" ]; then
     create

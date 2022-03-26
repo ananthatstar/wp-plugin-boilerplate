@@ -17,13 +17,35 @@ use PREFIX\App\Controllers\Core;
 
 class Menu extends Core
 {
+    /**
+     * Page slug
+     *
+     * @var string
+     */
+    protected $slug;
+
+    /**
+     * Menu constructor
+     */
     public function __construct()
     {
+        // set page slug
+        $this->slug = $this->config()->get('plugin.slug', '{plugin_slug}');
+
+        // add assets only for this page
+        if ($this->request()->get('page') == $this->slug) {
+            $this->assets()
+                ->addCss('admin', 'sample')
+                ->addJs('admin', 'sample')
+                ->enqueue('admin');
+        }
+
+        // add admin menu page
         add_action('admin_menu', [$this, 'addMenu']);
     }
 
     /**
-     * Add Admin Menu
+     * Add Menu
      *
      * @since 1.0.0
      * @hook admin_menu
@@ -37,20 +59,22 @@ class Menu extends Core
             __("{plugin_name}", '{plugin_slug}'),
             'update_core',
             '{plugin_slug}',
-            [$this, 'menuCallback']
+            [$this, 'page']
         );
     }
 
     /**
-     * Menu Callback Function
+     * Page View
      *
      * @return void
      */
-    public function menuCallback()
+    public function page()
     {
         $data = [
-            'message' => "It's working!"
+            'config' => $this->config(),
+            'request' => $this->request(),
         ];
-        self::view('Admin/Sample', $data);
+
+        $this->view('Admin/Sample', $data);
     }
 }

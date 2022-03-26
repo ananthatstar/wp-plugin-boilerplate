@@ -18,13 +18,61 @@ defined('ABSPATH') or exit;
 class Assets
 {
     /**
+     * Styles
+     *
+     * @var array
+     */
+    public $styles = [];
+
+    /**
+     * Scripts
+     *
+     * @var array
+     */
+    public $scripts = [];
+
+    /**
+     * Prefix
+     *
+     * @var string
+     */
+    public $prefix = '';
+
+    /**
+     * Version
+     *
+     * @var string|null
+     */
+    public $version = null;
+
+    /**
+     * Location to enqueue scripts
+     *
+     * @var array
+     */
+    protected $locations = [
+        'front' => 'wp_enqueue_scripts',
+        'admin' => 'admin_enqueue_scripts',
+        'login' => 'login_enqueue_scripts',
+        'customizer' => 'customize_preview_init',
+    ];
+
+    /**
+     * Asset
+     */
+    public function __construct()
+    {
+        $this->prefix = Config::get('plugin.prefix', 'PREFIX_');
+        $this->version = Config::get('plugin.version', null);
+    }
+
+    /**
      * Get asset url
      *
      * @param string $path
      * @return string
      */
-    public static function getUrl($path)
-    {
+    public static function getUrl($path) {
         return plugin_dir_url(PREFIX_PLUGIN_FILE) . "assets/" . $path;
     }
 
@@ -34,8 +82,7 @@ class Assets
      * @param string $path
      * @return bool
      */
-    public static function fileExists($path)
-    {
+    public static function fileExists($path) {
         return file_exists(PREFIX_PLUGIN_PATH . "/assets/" . $path);
     }
 
@@ -44,8 +91,7 @@ class Assets
      *
      * @return bool
      */
-    public static function loadMinified()
-    {
+    protected function loadMinified() {
         return (defined('SCRIPT_DEBUG') && SCRIPT_DEBUG === true) || Config::get('debug') === true;
     }
 
@@ -55,49 +101,35 @@ class Assets
      * @param string $name
      * @param string $file
      * @param array $deps
-     * @param bool $admin
-     * @return void
+     * @return Assets
      */
-    public static function enqueueStyle($name, $file, array $deps = [], $admin = false)
+    public function addCss($name, $file, array $deps = [])
     {
         $extension = ".css";
-        if (self::loadMinified() && self::fileExists("css/" . $file . ".min.css")) {
+        if ($this->loadMinified() && $this->fileExists("css/" . $file . ".min.css")) {
             $extension = ".min.css";
         }
 
-        $prefix = Config::get('plugin.prefix', '{prefix}_');
-        $version = Config::get('plugin.version', null);
+        $this->styles[$this->prefix . $name] = [
+            'src' => $this->getUrl("css/" . $file . $extension),
+            'deps' => $deps,
+        ];
 
-        $style_name = $prefix . $name;
-        $style_url = self::getUrl("css/" . $file . $extension);
-
-        $hook = $admin ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
-        add_action($hook, function () use ($style_name, $style_url, $deps, $version) {
-            wp_enqueue_style($style_name, $style_url, $deps, $version);
-        });
-    }
-
-    /**
-     * Enqueue admin style
-     *
-     * @param string $name
-     * @param string $file
-     * @param array $deps
-     * @return void
-     */
-    public static function enqueueAdminStyle($name, $file, array $deps = [])
-    {
-        self::enqueueStyle($name, $file, $deps, true);
+        return $this;
     }
 
     /**
      * Dequeue style
      *
      * @param string $name
+     * @return Assets
      */
-    public static function dequeueStyle($name)
-    {
-        wp_dequeue_style($name);
+    public function removeCss($name) {
+        if (isset($this->styles[$this->prefix . $name])) {
+            unset($this->styles[$this->prefix . $name]);
+        }
+
+        return $this;
     }
 
     /**
@@ -105,54 +137,70 @@ class Assets
      *
      * @param string $name
      * @param string $file
-     * @param array $deps
      * @param array $data
-     * @param bool $admin
-     * @return void
+     * @param array $deps
+     * @return Assets
      */
-    public static function enqueueScript($name, $file, array $deps = [], array $data = [], $admin = false)
+    public function addJs($name, $file, array $data = [], array $deps = [])
     {
         $extension = ".js";
         if (self::loadMinified() && self::fileExists("js/" . $file . ".min.js")) {
             $extension = ".min.js";
         }
 
-        $prefix = Config::get('plugin.prefix', '{prefix}_');
-        $version = Config::get('plugin.version', null);
+        $this->scripts[$this->prefix . $name] = [
+            'src' => $this->getUrl("js/" . $file . $extension),
+            'data' => $data,
+            'deps' => $deps,
+        ];
 
-        $script_name = $prefix . $name;
-        $script_url = self::getUrl("js/" . $file . $extension);
-
-        $hook = $admin ? 'admin_enqueue_scripts' : 'wp_enqueue_scripts';
-        add_action($hook, function () use ($script_name, $script_url, $deps, $version, $data) {
-            wp_enqueue_script($script_name, $script_url, $deps, $version);
-            if (!empty($data)) {
-                wp_localize_script($script_name, $script_name, $data);
-            }
-        });
-    }
-
-    /**
-     * Enqueue admin script
-     *
-     * @param string $name
-     * @param string $file
-     * @param array $deps
-     * @param array $data
-     * @return void
-     */
-    public static function enqueueAdminScript($name, $file, array $deps = [], array $data = [])
-    {
-        self::enqueueScript($name, $file, $deps, $data, true);
+        return $this;
     }
 
     /**
      * Dequeue script
      *
      * @param string $name
+     * @return Assets
      */
-    public static function dequeueScript($name)
+    public function removeJs($name)
     {
-        wp_dequeue_script($name);
+        if (isset($this->scripts[$this->prefix . $name])) {
+            unset($this->scripts[$this->prefix . $name]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Enqueue scripts
+     */
+    public function enqueue($location = null) {
+        if (is_null($location)) {
+            $location = is_admin() ? 'admin' : 'front';
+        }
+
+        if (!array_key_exists($location, $this->locations)) {
+            throw new \UnexpectedValueException('Expected a valid location on enqueue method');
+        }
+
+        $data = [
+            'styles' => $this->styles,
+            'scripts' => $this->scripts,
+            'version' => $this->version,
+        ];
+
+        add_action($this->locations[$location], function () use ($data) {
+            foreach ($data['styles'] as $name => $style) {
+                wp_enqueue_style($name, $style['src'], $style['deps'], $data['version']);
+            }
+
+            foreach ($data['styles'] as $name => $script) {
+                wp_enqueue_script($name, $script['src'], $script['deps'], $data['version']);
+                if (!empty($script['data'])) {
+                    wp_localize_script($name, $name, $script['data']);
+                }
+            }
+        });
     }
 }

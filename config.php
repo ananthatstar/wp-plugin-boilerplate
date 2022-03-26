@@ -4,9 +4,9 @@ return [
 
     'plugin' => [
         'name' => "{plugin_name}",
+        'slug' => "{plugin_slug}",
         'version' => "{plugin_version}",
         'prefix' => "{prefix}_",
-        'textdomain' => "{plugin_slug}",
     ],
 
     'require' => [

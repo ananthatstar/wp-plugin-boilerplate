@@ -1,6 +1,5 @@
 <?php defined('ABSPATH') or exit ?>
 
-<div class="notice notice-success" style="margin-top: 16px;">
-    <p><?php echo $data['message']; ?></p>
+<div class="card" style="margin: 20px 20px 0 0;">
+    <p><?php echo $config->get('plugin.name') ?></p>
 </div>
-

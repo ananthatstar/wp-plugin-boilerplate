@@ -18,6 +18,13 @@ defined('ABSPATH') or exit;
 class Plugin
 {
     /**
+     * Active plugins
+     *
+     * @var array
+     */
+    public static $active_plugins;
+
+    /**
      * Check dependencies
      *
      * @param bool $die
@@ -80,11 +87,14 @@ class Plugin
      */
     public static function activePlugins()
     {
-        $active_plugins = apply_filters('active_plugins', get_option('active_plugins', []));
-        if (is_multisite()) {
-            $active_plugins = array_merge($active_plugins, get_site_option('active_sitewide_plugins', []));
+        if (!isset(self::$active_plugins)) {
+            $active_plugins = apply_filters('active_plugins', get_option('active_plugins', []));
+            if (is_multisite()) {
+                $active_plugins = array_merge($active_plugins, get_site_option('active_sitewide_plugins', []));
+            }
+            self::$active_plugins = $active_plugins;
         }
-        return $active_plugins;
+        return self::$active_plugins;
     }
 
     /**
