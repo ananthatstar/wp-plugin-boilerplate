@@ -14,7 +14,7 @@ Simply clone this repo or download zip and extract
 #### Build
 Run the following command
 ```console
-$ sh plugin.sh build
+$sh plugin.sh build
 ```
 Initially, it is gather plugin related information.
 Then it is only doing building process.
@@ -23,5 +23,5 @@ Then it is only doing building process.
 You can also generate a new plugin by
 using the **plugin.sh** file
 ```console
-$ sh plugin.sh new
+$sh plugin.sh new
 ```
